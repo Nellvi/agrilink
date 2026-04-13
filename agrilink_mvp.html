@@ -1,0 +1,1148 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50: #EAF3DE; --green-100: #C0DD97; --green-200: #97C459;
+    --green-400: #639922; --green-600: #3B6D11; --green-800: #27500A; --green-900: #173404;
+    --amber-50: #FAEEDA; --amber-100: #FAC775; --amber-200: #EF9F27;
+    --amber-400: #BA7517; --amber-600: #854F0B; --amber-800: #633806;
+    --teal-50: #E1F5EE; --teal-100: #9FE1CB; --teal-200: #5DCAA5;
+    --teal-400: #1D9E75; --teal-600: #0F6E56; --teal-800: #085041;
+    --coral-50: #FAECE7; --coral-100: #F5C4B3; --coral-200: #F0997B;
+    --coral-400: #D85A30; --coral-600: #993C1D; --coral-800: #712B13;
+    --blue-50: #E6F1FB; --blue-100: #B5D4F4; --blue-200: #85B7EB;
+    --blue-400: #378ADD; --blue-600: #185FA5; --blue-800: #0C447C;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-200: #B4B2A9;
+    --gray-400: #888780; --gray-600: #5F5E5A; --gray-800: #444441;
+  }
+
+  body { font-family: 'DM Sans', sans-serif; background: var(--color-background-tertiary); color: var(--color-text-primary); }
+
+  .app { display: flex; min-height: 100vh; flex-direction: column; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; background: var(--color-background-primary);
+    border-bottom: 0.5px solid var(--color-border-tertiary); position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 20px; color: var(--green-600); display: flex; align-items: center; gap: 8px; }
+  .logo-leaf { width: 28px; height: 28px; background: var(--green-400); border-radius: 50% 0 50% 0; display: inline-block; }
+
+  .role-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .role-pill {
+    font-size: 12px; padding: 5px 12px; border-radius: 20px; cursor: pointer; border: 0.5px solid var(--color-border-tertiary);
+    background: var(--color-background-secondary); color: var(--color-text-secondary); transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif; font-weight: 400;
+  }
+  .role-pill.active { background: var(--green-600); color: var(--green-50); border-color: var(--green-600); }
+  .role-pill:hover:not(.active) { background: var(--color-background-primary); border-color: var(--color-border-secondary); }
+
+  .user-badge { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-text-secondary); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white; }
+
+  .layout { display: flex; flex: 1; }
+
+  .sidebar {
+    width: 200px; background: var(--color-background-primary); border-right: 0.5px solid var(--color-border-tertiary);
+    padding: 16px 0; flex-shrink: 0; display: flex; flex-direction: column;
+  }
+  .nav-section { margin-bottom: 16px; }
+  .nav-label { font-size: 10px; font-weight: 500; color: var(--color-text-tertiary); padding: 0 16px; margin-bottom: 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 16px;
+    font-size: 13px; cursor: pointer; color: var(--color-text-secondary); transition: all 0.12s;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .nav-item.active { background: var(--green-50); color: var(--green-800); border-left-color: var(--green-400); font-weight: 500; }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .main { flex: 1; padding: 20px; overflow-y: auto; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header { margin-bottom: 20px; }
+  .page-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: var(--color-text-primary); }
+  .page-subtitle { font-size: 13px; color: var(--color-text-secondary); margin-top: 3px; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .stat-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); font-family: 'Sora', sans-serif; }
+  .stat-change { font-size: 11px; margin-top: 4px; }
+  .stat-change.up { color: var(--green-600); }
+  .stat-change.down { color: var(--coral-400); }
+
+  .section-title { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: var(--color-text-primary); }
+
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; margin-bottom: 16px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .listing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .listing-card {
+    background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg); overflow: hidden; cursor: pointer; transition: border-color 0.12s;
+  }
+  .listing-card:hover { border-color: var(--color-border-secondary); }
+  .listing-img { width: 100%; height: 90px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+  .listing-body { padding: 10px 12px; }
+  .listing-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .listing-farmer { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+  .listing-price { font-size: 14px; font-weight: 500; color: var(--green-600); margin-top: 6px; font-family: 'Sora', sans-serif; }
+  .listing-location { font-size: 11px; color: var(--color-text-tertiary); display: flex; align-items: center; gap: 3px; margin-top: 3px; }
+  .badge { display: inline-flex; align-items: center; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 400; }
+  .badge-green { background: var(--green-50); color: var(--green-800); }
+  .badge-amber { background: var(--amber-50); color: var(--amber-800); }
+  .badge-teal { background: var(--teal-50); color: var(--teal-800); }
+  .badge-coral { background: var(--coral-50); color: var(--coral-800); }
+  .badge-blue { background: var(--blue-50); color: var(--blue-800); }
+
+  .table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .table th { text-align: left; padding: 8px 12px; font-weight: 500; color: var(--color-text-secondary); font-size: 11px; border-bottom: 0.5px solid var(--color-border-tertiary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .table td { padding: 10px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); }
+  .table tr:last-child td { border-bottom: none; }
+  .table tr:hover td { background: var(--color-background-secondary); }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--border-radius-md); font-size: 13px; cursor: pointer; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); font-family: 'DM Sans', sans-serif; transition: all 0.12s; }
+  .btn:hover { background: var(--color-background-secondary); }
+  .btn-primary { background: var(--green-600); color: white; border-color: var(--green-600); }
+  .btn-primary:hover { background: var(--green-800); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 5px; display: block; }
+  .form-input { width: 100%; padding: 8px 10px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-family: 'DM Sans', sans-serif; }
+  .form-input:focus { outline: none; border-color: var(--green-400); box-shadow: 0 0 0 2px var(--green-50); }
+  .form-select { width: 100%; padding: 8px 10px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-family: 'DM Sans', sans-serif; }
+
+  .search-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .search-input { flex: 1; padding: 8px 12px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-family: 'DM Sans', sans-serif; }
+  .search-input:focus { outline: none; border-color: var(--green-400); }
+
+  .filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-chip { padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); color: var(--color-text-secondary); transition: all 0.12s; }
+  .filter-chip.active { background: var(--green-50); color: var(--green-800); border-color: var(--green-200); }
+
+  .order-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .order-item:last-child { border-bottom: none; }
+
+  .msg-bubble { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 10px 14px; margin-bottom: 10px; max-width: 85%; }
+  .msg-bubble.sent { background: var(--green-50); margin-left: auto; color: var(--green-900); }
+  .msg-meta { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+  .msg-text { font-size: 13px; }
+
+  .timeline { position: relative; padding-left: 20px; }
+  .timeline::before { content: ''; position: absolute; left: 5px; top: 0; bottom: 0; width: 1px; background: var(--color-border-tertiary); }
+  .timeline-item { position: relative; padding-bottom: 16px; }
+  .timeline-dot { position: absolute; left: -18px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: var(--green-400); border: 2px solid var(--color-background-primary); }
+  .timeline-dot.pending { background: var(--amber-200); }
+  .timeline-text { font-size: 13px; color: var(--color-text-primary); }
+  .timeline-time { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+  .alert { padding: 10px 14px; border-radius: var(--border-radius-md); font-size: 13px; margin-bottom: 12px; border: 0.5px solid; }
+  .alert-info { background: var(--blue-50); color: var(--blue-800); border-color: var(--blue-100); }
+  .alert-success { background: var(--green-50); color: var(--green-800); border-color: var(--green-100); }
+  .alert-warn { background: var(--amber-50); color: var(--amber-800); border-color: var(--amber-100); }
+
+  .chart-bar-wrap { margin-bottom: 10px; }
+  .chart-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .chart-bar-bg { background: var(--color-background-secondary); border-radius: 4px; height: 8px; overflow: hidden; }
+  .chart-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+  .weather-widget { background: var(--teal-50); border: 0.5px solid var(--teal-100); border-radius: var(--border-radius-lg); padding: 14px; display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .weather-temp { font-size: 28px; font-weight: 500; color: var(--teal-800); font-family: 'Sora', sans-serif; }
+  .weather-info { font-size: 12px; color: var(--teal-600); line-height: 1.6; }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--color-text-tertiary); font-size: 13px; }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+  .tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .tab { padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -0.5px; transition: all 0.12s; }
+  .tab.active { color: var(--green-600); border-bottom-color: var(--green-400); font-weight: 500; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .map-placeholder { background: var(--green-50); border: 0.5px solid var(--green-100); border-radius: var(--border-radius-lg); height: 180px; display: flex; align-items: center; justify-content: center; color: var(--green-600); font-size: 13px; margin-bottom: 16px; flex-direction: column; gap: 8px; }
+
+  .notif-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .notif-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  .notif-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.4; }
+  .notif-time { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px; }
+</style>
+<div class="app">
+  <div class="topbar">
+    <div class="logo"><span class="logo-leaf"></span>AgriLink</div>
+    <div class="role-pills" id="rolePills">
+      <button class="role-pill active" onclick="switchRole('farmer')">Farmer</button>
+      <button class="role-pill" onclick="switchRole('buyer')">Buyer</button>
+      <button class="role-pill" onclick="switchRole('seedseller')">Seed Seller</button>
+      <button class="role-pill" onclick="switchRole('supplier')">Supplier</button>
+      <button class="role-pill" onclick="switchRole('admin')">Admin</button>
+    </div>
+    <div class="user-badge" id="userBadge">
+      <div class="avatar" style="background: var(--green-600)">MK</div>
+      <span>Mugabo K.</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="main" id="mainContent"></div>
+  </div>
+</div>
+
+<script>
+const roles = {
+  farmer: {
+    name: 'Mugabo K.', initials: 'MK', color: 'var(--green-600)',
+    nav: [
+      { label: 'Overview', section: 'main', items: [
+        { icon: '◈', label: 'Dashboard', id: 'dashboard' },
+        { icon: '◫', label: 'My Listings', id: 'listings' },
+        { icon: '⊕', label: 'Post Produce', id: 'post' },
+        { icon: '◻', label: 'My Orders', id: 'orders' },
+      ]},
+      { label: 'Resources', section: 'res', items: [
+        { icon: '◑', label: 'Market Prices', id: 'prices' },
+        { icon: '◒', label: 'Weather', id: 'weather' },
+        { icon: '◐', label: 'Input Shop', id: 'inputs' },
+        { icon: '◉', label: 'Messages', id: 'messages' },
+      ]}
+    ]
+  },
+  buyer: {
+    name: 'Uwase A.', initials: 'UA', color: 'var(--teal-600)',
+    nav: [
+      { label: 'Overview', section: 'main', items: [
+        { icon: '◈', label: 'Dashboard', id: 'b_dashboard' },
+        { icon: '⊞', label: 'Browse Produce', id: 'browse' },
+        { icon: '◻', label: 'My Orders', id: 'b_orders' },
+        { icon: '◑', label: 'Price Watch', id: 'pricewatch' },
+      ]},
+      { label: 'Tools', section: 'tools', items: [
+        { icon: '◎', label: 'Farmer Profiles', id: 'farmers' },
+        { icon: '◉', label: 'Messages', id: 'b_messages' },
+        { icon: '◒', label: 'Payments', id: 'payments' },
+      ]}
+    ]
+  },
+  seedseller: {
+    name: 'Nkurunziza J.', initials: 'NJ', color: 'var(--amber-600)',
+    nav: [
+      { label: 'Overview', section: 'main', items: [
+        { icon: '◈', label: 'Dashboard', id: 'ss_dashboard' },
+        { icon: '◫', label: 'My Inventory', id: 'inventory' },
+        { icon: '⊕', label: 'Add Product', id: 'addproduct' },
+        { icon: '◻', label: 'Orders', id: 'ss_orders' },
+      ]},
+      { label: 'Business', section: 'biz', items: [
+        { icon: '◑', label: 'Analytics', id: 'analytics' },
+        { icon: '◒', label: 'Promotions', id: 'promos' },
+        { icon: '◉', label: 'Messages', id: 'ss_messages' },
+      ]}
+    ]
+  },
+  supplier: {
+    name: 'Habimana P.', initials: 'HP', color: 'var(--blue-600)',
+    nav: [
+      { label: 'Overview', section: 'main', items: [
+        { icon: '◈', label: 'Dashboard', id: 'sup_dashboard' },
+        { icon: '◫', label: 'Supply Catalog', id: 'catalog' },
+        { icon: '⊕', label: 'Add Supply', id: 'addsupply' },
+        { icon: '◻', label: 'Deliveries', id: 'deliveries' },
+      ]},
+      { label: 'Operations', section: 'ops', items: [
+        { icon: '◎', label: 'Farmer Requests', id: 'requests' },
+        { icon: '◑', label: 'Routes', id: 'routes' },
+        { icon: '◉', label: 'Messages', id: 'sup_messages' },
+      ]}
+    ]
+  },
+  admin: {
+    name: 'Admin', initials: 'AD', color: 'var(--coral-600)',
+    nav: [
+      { label: 'Overview', section: 'main', items: [
+        { icon: '◈', label: 'Dashboard', id: 'ad_dashboard' },
+        { icon: '◎', label: 'Users', id: 'users' },
+        { icon: '◫', label: 'All Listings', id: 'alllistings' },
+        { icon: '◻', label: 'Transactions', id: 'transactions' },
+      ]},
+      { label: 'Platform', section: 'platform', items: [
+        { icon: '◒', label: 'Reports', id: 'reports' },
+        { icon: '◑', label: 'Disputes', id: 'disputes' },
+        { icon: '◉', label: 'Settings', id: 'settings' },
+      ]}
+    ]
+  }
+};
+
+const produce = [
+  { id: 1, name: 'Fresh Maize', farmer: 'Mugabo K.', price: 'RWF 450/kg', loc: 'Musanze', bg: 'var(--amber-50)', icon: '🌽', cat: 'Cereals', qty: '200 kg', status: 'Available' },
+  { id: 2, name: 'Irish Potatoes', farmer: 'Uwimana R.', price: 'RWF 300/kg', loc: 'Rubavu', bg: 'var(--gray-50)', icon: '🥔', cat: 'Vegetables', qty: '500 kg', status: 'Available' },
+  { id: 3, name: 'Green Beans', farmer: 'Bizimana E.', price: 'RWF 800/kg', loc: 'Nyagatare', bg: 'var(--green-50)', icon: '🫘', cat: 'Vegetables', qty: '120 kg', status: 'Low Stock' },
+  { id: 4, name: 'Tomatoes', farmer: 'Kantarama S.', price: 'RWF 600/kg', loc: 'Kigali', bg: 'var(--coral-50)', icon: '🍅', cat: 'Vegetables', qty: '80 kg', status: 'Available' },
+  { id: 5, name: 'Banana Bunch', farmer: 'Ndayisaba T.', price: 'RWF 1,200/bunch', loc: 'Karongi', bg: 'var(--amber-50)', icon: '🍌', cat: 'Fruits', qty: '60 bunches', status: 'Available' },
+  { id: 6, name: 'Sorghum', farmer: 'Mugabo K.', price: 'RWF 380/kg', loc: 'Musanze', bg: 'var(--amber-50)', icon: '🌾', cat: 'Cereals', qty: '350 kg', status: 'Available' },
+  { id: 7, name: 'Avocado', farmer: 'Irakoze M.', price: 'RWF 200/pc', loc: 'Huye', bg: 'var(--green-50)', icon: '🥑', cat: 'Fruits', qty: '200 pcs', status: 'Available' },
+  { id: 8, name: 'Sweet Potatoes', farmer: 'Byukusenge L.', price: 'RWF 250/kg', loc: 'Rwamagana', bg: 'var(--amber-50)', icon: '🍠', cat: 'Root Crops', qty: '400 kg', status: 'Available' },
+];
+
+const seeds = [
+  { name: 'Hybrid Maize Seed', brand: 'Rwa Seeds', price: 'RWF 12,000/2kg', stock: 48, rating: '4.8', icon: '🌽' },
+  { name: 'Tomato F1 Seeds', brand: 'ISABU Certified', price: 'RWF 8,500/100g', stock: 23, rating: '4.6', icon: '🍅' },
+  { name: 'Bean Seed (Climbing)', brand: 'RAB Approved', price: 'RWF 3,500/kg', stock: 60, rating: '4.7', icon: '🫘' },
+  { name: 'Sorghum SORG-A', brand: 'National Seeds', price: 'RWF 5,000/kg', stock: 35, rating: '4.5', icon: '🌾' },
+];
+
+const supplies = [
+  { name: 'NPK Fertilizer 25kg', supplier: 'Agro-Supplies Ltd', price: 'RWF 28,000', stock: 120, icon: '⚗' },
+  { name: 'Pesticide Spray 5L', supplier: 'Farm Chem RW', price: 'RWF 14,500', stock: 45, icon: '🧪' },
+  { name: 'Drip Irrigation Kit', supplier: 'Agro-Supplies Ltd', price: 'RWF 85,000', stock: 12, icon: '💧' },
+  { name: 'Hand Tractor Hire', supplier: 'Moto-Farm', price: 'RWF 15,000/day', stock: 6, icon: '🚜' },
+];
+
+let currentRole = 'farmer';
+let activeNav = 'dashboard';
+let activeTab = {};
+
+function switchRole(role) {
+  currentRole = role;
+  document.querySelectorAll('.role-pill').forEach((p, i) => {
+    p.classList.toggle('active', Object.keys(roles)[i] === role);
+  });
+  const r = roles[role];
+  document.getElementById('userBadge').innerHTML = `<div class="avatar" style="background:${r.color}">${r.initials}</div><span>${r.name}</span>`;
+  const defaultPage = roles[role].nav[0].items[0].id;
+  activeNav = defaultPage;
+  renderSidebar();
+  renderPage();
+}
+
+function renderSidebar() {
+  const r = roles[currentRole];
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = r.nav.map(section => `
+    <div class="nav-section">
+      <div class="nav-label">${section.label}</div>
+      ${section.items.map(item => `
+        <div class="nav-item ${activeNav === item.id ? 'active' : ''}" onclick="navigate('${item.id}')">
+          <span class="nav-icon">${item.icon}</span>${item.label}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function navigate(id) {
+  activeNav = id;
+  renderSidebar();
+  renderPage();
+}
+
+function renderPage() {
+  const mc = document.getElementById('mainContent');
+  const pages = {
+    dashboard: farmerDashboard,
+    listings: farmerListings,
+    post: farmerPost,
+    orders: farmerOrders,
+    prices: marketPrices,
+    weather: weatherPage,
+    inputs: inputsPage,
+    messages: messagesPage,
+    b_dashboard: buyerDashboard,
+    browse: browseProduce,
+    b_orders: buyerOrders,
+    pricewatch: priceWatch,
+    farmers: farmerProfiles,
+    b_messages: messagesPage,
+    payments: paymentsPage,
+    ss_dashboard: sssDashboard,
+    inventory: sssInventory,
+    addproduct: addProduct,
+    ss_orders: sssOrders,
+    analytics: analyticsPage,
+    promos: promosPage,
+    ss_messages: messagesPage,
+    sup_dashboard: supDashboard,
+    catalog: supCatalog,
+    addsupply: addSupply,
+    deliveries: deliveriesPage,
+    requests: supRequests,
+    routes: routesPage,
+    sup_messages: messagesPage,
+    ad_dashboard: adminDashboard,
+    users: adminUsers,
+    alllistings: adminListings,
+    transactions: adminTransactions,
+    reports: adminReports,
+    disputes: adminDisputes,
+    settings: adminSettings,
+  };
+  const fn = pages[activeNav] || (() => `<div class="empty-state"><div class="empty-icon">◻</div><p>Page coming soon</p></div>`);
+  mc.innerHTML = fn();
+}
+
+function farmerDashboard() {
+  return `
+    <div class="page-header">
+      <div class="page-title">Good morning, Mugabo!</div>
+      <div class="page-subtitle">Musanze District · Season B Active</div>
+    </div>
+    <div class="alert alert-success">Your maize listing received 3 new buyer inquiries today.</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Active Listings</div><div class="stat-value">6</div><div class="stat-change up">+2 this week</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Orders</div><div class="stat-value">4</div><div class="stat-change up">+1 new</div></div>
+      <div class="stat-card"><div class="stat-label">Revenue (Month)</div><div class="stat-value">432K</div><div class="stat-change up">RWF +18%</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Rating</div><div class="stat-value">4.7</div><div class="stat-change up">★ Excellent</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title">Recent Activity</div>
+        <div class="timeline">
+          <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text">Buyer Uwase A. placed order for 50kg Maize</div><div class="timeline-time">2 hrs ago</div></div>
+          <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text">Payment received — RWF 22,500</div><div class="timeline-time">5 hrs ago</div></div>
+          <div class="timeline-item"><div class="timeline-dot pending"></div><div class="timeline-text">New inquiry on Sorghum listing</div><div class="timeline-time">Yesterday</div></div>
+          <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text">Seed order delivered by Nkurunziza J.</div><div class="timeline-time">2 days ago</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Top Selling Produce</div>
+        <div class="chart-bar-wrap"><div class="chart-bar-label"><span>Maize</span><span>200 kg sold</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:80%;background:var(--green-400)"></div></div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-label"><span>Sorghum</span><span>140 kg sold</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:56%;background:var(--amber-200)"></div></div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-label"><span>Beans</span><span>80 kg sold</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:32%;background:var(--teal-400)"></div></div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-label"><span>Sweet Potato</span><span>60 kg sold</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:24%;background:var(--coral-200)"></div></div></div>
+        <button class="btn btn-sm btn-primary" style="margin-top:12px" onclick="sendPrompt('How can I improve my AgriLink crop listings to attract more buyers?')">Get advice ↗</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">Upcoming Input Needs</div>
+      <table class="table">
+        <thead><tr><th>Item</th><th>Qty</th><th>Due Date</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>NPK Fertilizer</td><td>50 kg</td><td>Apr 20, 2026</td><td><span class="badge badge-amber">Order Now</span></td></tr>
+          <tr><td>Maize Seed (Hybrid)</td><td>5 kg</td><td>May 1, 2026</td><td><span class="badge badge-green">In Cart</span></td></tr>
+          <tr><td>Pesticide Spray</td><td>2 L</td><td>Apr 25, 2026</td><td><span class="badge badge-teal">Ordered</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function farmerListings() {
+  return `
+    <div class="page-header"><div class="page-title">My Listings</div><div class="page-subtitle">Manage your produce on the marketplace</div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="filter-row" style="margin:0">
+        <div class="filter-chip active">All</div>
+        <div class="filter-chip">Available</div>
+        <div class="filter-chip">Low Stock</div>
+        <div class="filter-chip">Sold Out</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="navigate('post')">+ New Listing</button>
+    </div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);overflow:hidden;border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Produce</th><th>Category</th><th>Price</th><th>Qty Left</th><th>Status</th><th>Inquiries</th><th></th></tr></thead>
+      <tbody>
+        ${produce.filter(p=>p.farmer==='Mugabo K.').map(p=>`
+          <tr>
+            <td><span style="margin-right:6px">${p.icon}</span>${p.name}</td>
+            <td><span class="badge badge-green">${p.cat}</span></td>
+            <td style="font-weight:500;color:var(--green-600)">${p.price}</td>
+            <td>${p.qty}</td>
+            <td><span class="badge ${p.status==='Low Stock'?'badge-amber':'badge-teal'}">${p.status}</span></td>
+            <td>3</td>
+            <td><button class="btn btn-sm">Edit</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function farmerPost() {
+  return `
+    <div class="page-header"><div class="page-title">Post New Produce</div><div class="page-subtitle">List your harvest on the AgriLink marketplace</div></div>
+    <div class="card" style="max-width:560px">
+      <div class="form-group"><label class="form-label">Produce Name</label><input class="form-input" placeholder="e.g. Fresh Maize, Irish Potatoes..."></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Cereals</option><option>Vegetables</option><option>Fruits</option><option>Root Crops</option><option>Legumes</option></select></div>
+        <div class="form-group"><label class="form-label">Unit</label><select class="form-select"><option>kg</option><option>ton</option><option>bunch</option><option>piece</option><option>sack</option></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Price (RWF per unit)</label><input class="form-input" type="number" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Available Quantity</label><input class="form-input" type="number" placeholder="0"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Harvest Date</label><input class="form-input" type="date"></div>
+      <div class="form-group"><label class="form-label">District / Location</label><select class="form-select"><option>Musanze</option><option>Rubavu</option><option>Nyagatare</option><option>Rwamagana</option><option>Karongi</option><option>Huye</option><option>Kigali</option></select></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" rows="3" placeholder="Describe your produce — quality, storage, harvest method..."></textarea></div>
+      <div class="form-group"><label class="form-label">Accepts</label><div style="display:flex;gap:12px;margin-top:4px;font-size:13px"><label><input type="checkbox" checked> Mobile Money</label><label><input type="checkbox" checked> Bank Transfer</label><label><input type="checkbox"> Cash on Delivery</label></div></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px">Publish Listing</button>
+    </div>
+  `;
+}
+
+function farmerOrders() {
+  return `
+    <div class="page-header"><div class="page-title">My Orders</div></div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'ord','pending')">Pending (2)</div>
+      <div class="tab" onclick="switchTab(this,'ord','confirmed')">Confirmed (1)</div>
+      <div class="tab" onclick="switchTab(this,'ord','completed')">Completed (8)</div>
+    </div>
+    <div id="ord-pending" class="tab-panel active">
+      ${[{buyer:'Uwase A.',produce:'Fresh Maize',qty:'50 kg',amt:'RWF 22,500',date:'Apr 12'},{buyer:'Ndiho P.',produce:'Sorghum',qty:'100 kg',amt:'RWF 38,000',date:'Apr 11'}].map(o=>`
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div style="font-weight:500;font-size:14px">${o.produce} — ${o.qty}</div>
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-top:3px">Buyer: ${o.buyer} · ${o.date}</div>
+            </div>
+            <div style="text-align:right"><div style="font-weight:500;color:var(--green-600)">${o.amt}</div><span class="badge badge-amber" style="margin-top:4px">Pending</span></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary btn-sm">Accept</button><button class="btn btn-sm">Decline</button><button class="btn btn-sm">Message Buyer</button></div>
+        </div>
+      `).join('')}
+    </div>
+    <div id="ord-confirmed" class="tab-panel"></div>
+    <div id="ord-completed" class="tab-panel"><div class="empty-state"><div class="empty-icon">✓</div><p>8 completed orders this season.</p></div></div>
+  `;
+}
+
+function marketPrices() {
+  const items = [
+    {name:'Maize',unit:'kg',today:'RWF 450',yesterday:'RWF 430',trend:'up'},
+    {name:'Irish Potato',unit:'kg',today:'RWF 300',yesterday:'RWF 320',trend:'down'},
+    {name:'Tomato',unit:'kg',today:'RWF 600',yesterday:'RWF 580',trend:'up'},
+    {name:'Beans',unit:'kg',today:'RWF 800',yesterday:'RWF 800',trend:'flat'},
+    {name:'Banana',unit:'bunch',today:'RWF 1,200',yesterday:'RWF 1,100',trend:'up'},
+    {name:'Sorghum',unit:'kg',today:'RWF 380',yesterday:'RWF 390',trend:'down'},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">Market Prices</div><div class="page-subtitle">Kigali & Major Market Reference Prices · Apr 12, 2026</div></div>
+    <div class="alert alert-info">Prices updated daily from Kimironko, Nyarugenge & Musanze markets.</div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Crop</th><th>Unit</th><th>Today</th><th>Yesterday</th><th>Trend</th></tr></thead>
+      <tbody>${items.map(i=>`<tr><td>${i.name}</td><td>${i.unit}</td><td style="font-weight:500">${i.today}</td><td style="color:var(--color-text-secondary)">${i.yesterday}</td><td style="color:${i.trend==='up'?'var(--green-600)':i.trend==='down'?'var(--coral-400)':'var(--color-text-secondary)'};">${i.trend==='up'?'▲':i.trend==='down'?'▼':'—'}</td></tr>`).join('')}</tbody>
+    </table>
+  `;
+}
+
+function weatherPage() {
+  return `
+    <div class="page-header"><div class="page-title">Weather & Season</div></div>
+    <div class="weather-widget">
+      <div style="font-size:40px">🌤</div>
+      <div><div class="weather-temp">22°C</div><div class="weather-info">Musanze District<br>Partly cloudy · Humidity 68%<br>Apr 12, 2026</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="section-title">7-Day Forecast</div>${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>`<div class="order-item"><span style="font-size:13px;color:var(--color-text-secondary);width:32px">${d}</span><span>${['🌤','🌧','⛅','🌦','🌤','🌤','🌧'][i]}</span><span style="font-size:13px">${[22,18,20,19,23,24,17][i]}°C</span></div>`).join('')}</div>
+      <div class="card"><div class="section-title">Agri Advisory</div><div class="alert alert-warn" style="margin-bottom:12px">Rain expected Tue–Wed. Avoid spraying pesticides.</div><div class="alert alert-success" style="margin-bottom:12px">Good conditions for planting maize this week.</div><div class="alert alert-info">Season B ends June 30. Plan harvest schedule.</div></div>
+    </div>
+  `;
+}
+
+function inputsPage() {
+  return `
+    <div class="page-header"><div class="page-title">Input Shop</div><div class="page-subtitle">Seeds, fertilizers & tools from verified suppliers</div></div>
+    <div class="search-bar"><input class="search-input" placeholder="Search inputs..."><button class="btn btn-primary">Search</button></div>
+    <div class="section-title">Seeds</div>
+    <div class="listing-grid" style="margin-bottom:20px">
+      ${seeds.map(s=>`
+        <div class="listing-card">
+          <div class="listing-img" style="background:var(--amber-50)">${s.icon}</div>
+          <div class="listing-body">
+            <div class="listing-name">${s.name}</div>
+            <div class="listing-farmer">${s.brand}</div>
+            <div class="listing-price">${s.price}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <span class="badge badge-green">★ ${s.rating}</span>
+              <button class="btn btn-sm btn-primary">Order</button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="section-title">Supplies & Equipment</div>
+    <div class="listing-grid">
+      ${supplies.map(s=>`
+        <div class="listing-card">
+          <div class="listing-img" style="background:var(--blue-50);font-size:28px">${s.icon}</div>
+          <div class="listing-body">
+            <div class="listing-name">${s.name}</div>
+            <div class="listing-farmer">${s.supplier}</div>
+            <div class="listing-price">${s.price}</div>
+            <button class="btn btn-sm btn-primary" style="margin-top:8px;width:100%;justify-content:center">Add to Cart</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function messagesPage() {
+  return `
+    <div class="page-header"><div class="page-title">Messages</div></div>
+    <div class="grid-2">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;font-weight:500">Conversations</div>
+        ${[{name:'Uwase A.',last:'Can you do 60kg at that price?',time:'2h',unread:2,role:'Buyer'},{name:'Ndiho P.',last:'When can you deliver?',time:'5h',unread:0,role:'Buyer'},{name:'AgriLink Support',last:'Your listing was approved.',time:'1d',unread:0,role:'Platform'}].map(c=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary)">
+            <div class="avatar" style="background:var(--teal-600);flex-shrink:0">${c.name.split(' ').map(n=>n[0]).join('')}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:500">${c.name}</span><span style="font-size:11px;color:var(--color-text-tertiary)">${c.time}</span></div>
+              <div style="font-size:12px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.last}</div>
+            </div>
+            ${c.unread?`<div style="width:18px;height:18px;border-radius:50%;background:var(--green-400);color:white;font-size:11px;display:flex;align-items:center;justify-content:center">${c.unread}</div>`:''}
+          </div>
+        `).join('')}
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;min-height:300px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:12px;padding-bottom:10px;border-bottom:0.5px solid var(--color-border-tertiary)">Uwase A. · Buyer</div>
+        <div style="flex:1">
+          <div class="msg-bubble"><div class="msg-meta">Uwase A. · 2h ago</div><div class="msg-text">Hello, I am interested in your Fresh Maize listing. Is 50kg available?</div></div>
+          <div class="msg-bubble sent"><div class="msg-meta">You · 2h ago</div><div class="msg-text">Yes, 50kg is available. Price is RWF 450/kg = RWF 22,500 total.</div></div>
+          <div class="msg-bubble"><div class="msg-meta">Uwase A. · 1h ago</div><div class="msg-text">Can you do 60kg at that price?</div></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <input class="form-input" style="flex:1" placeholder="Type a message...">
+          <button class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buyerDashboard() {
+  return `
+    <div class="page-header"><div class="page-title">Welcome back, Uwase!</div><div class="page-subtitle">Kigali · Wholesale Buyer</div></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Active Orders</div><div class="stat-value">3</div><div class="stat-change up">2 awaiting delivery</div></div>
+      <div class="stat-card"><div class="stat-label">Total Spent (Month)</div><div class="stat-value">1.2M</div><div class="stat-change">RWF</div></div>
+      <div class="stat-card"><div class="stat-label">Saved Farmers</div><div class="stat-value">12</div><div class="stat-change up">+2 this week</div></div>
+      <div class="stat-card"><div class="stat-label">Price Alerts</div><div class="stat-value">4</div><div class="stat-change">Active</div></div>
+    </div>
+    <div class="alert alert-success">Maize price dropped to RWF 450/kg — 3 farmers match your criteria!</div>
+    <div class="card"><div class="section-title">Recommended Produce</div>
+    <div class="listing-grid">${produce.slice(0,4).map(p=>`
+      <div class="listing-card">
+        <div class="listing-img" style="background:${p.bg}">${p.icon}</div>
+        <div class="listing-body"><div class="listing-name">${p.name}</div><div class="listing-farmer">${p.farmer}</div><div class="listing-price">${p.price}</div><div class="listing-location">📍 ${p.loc}</div></div>
+      </div>`).join('')}</div></div>
+  `;
+}
+
+function browseProduce() {
+  return `
+    <div class="page-header"><div class="page-title">Browse Produce</div><div class="page-subtitle">Fresh from farmers across Rwanda</div></div>
+    <div class="search-bar"><input class="search-input" placeholder="Search crops, location, farmer..."><button class="btn btn-primary">Search</button></div>
+    <div class="filter-row">
+      <div class="filter-chip active">All</div>
+      <div class="filter-chip">Cereals</div>
+      <div class="filter-chip">Vegetables</div>
+      <div class="filter-chip">Fruits</div>
+      <div class="filter-chip">Root Crops</div>
+      <div class="filter-chip">Legumes</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;font-size:12px;color:var(--color-text-secondary);align-items:center">
+      <span>Sort by:</span>
+      <select class="form-select" style="width:auto;font-size:12px;padding:4px 8px"><option>Nearest</option><option>Price: Low</option><option>Price: High</option><option>Newest</option></select>
+    </div>
+    <div class="listing-grid">${produce.map(p=>`
+      <div class="listing-card" onclick="">
+        <div class="listing-img" style="background:${p.bg}">${p.icon}</div>
+        <div class="listing-body">
+          <div class="listing-name">${p.name}</div>
+          <div class="listing-farmer">by ${p.farmer}</div>
+          <div class="listing-price">${p.price}</div>
+          <div class="listing-location">📍 ${p.loc}</div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn btn-sm btn-primary" style="flex:1;justify-content:center">Order</button>
+            <button class="btn btn-sm">Save</button>
+          </div>
+        </div>
+      </div>`).join('')}</div>
+  `;
+}
+
+function buyerOrders() {
+  const orders = [
+    {id:'ORD-0412',produce:'Fresh Maize 50kg',farmer:'Mugabo K.',total:'RWF 22,500',status:'Confirmed',date:'Apr 12'},
+    {id:'ORD-0409',produce:'Tomatoes 30kg',farmer:'Kantarama S.',total:'RWF 18,000',status:'In Transit',date:'Apr 9'},
+    {id:'ORD-0401',produce:'Avocado 100 pcs',farmer:'Irakoze M.',total:'RWF 20,000',status:'Delivered',date:'Apr 1'},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">My Orders</div></div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Order ID</th><th>Produce</th><th>Farmer</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr></thead>
+      <tbody>${orders.map(o=>`
+        <tr>
+          <td style="font-family:monospace;font-size:12px">${o.id}</td>
+          <td>${o.produce}</td>
+          <td>${o.farmer}</td>
+          <td style="font-weight:500;color:var(--green-600)">${o.total}</td>
+          <td><span class="badge ${o.status==='Delivered'?'badge-green':o.status==='In Transit'?'badge-teal':'badge-blue'}">${o.status}</span></td>
+          <td style="color:var(--color-text-secondary)">${o.date}</td>
+          <td><button class="btn btn-sm">Track</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function priceWatch() {
+  return `
+    <div class="page-header"><div class="page-title">Price Watch</div><div class="page-subtitle">Set alerts when prices hit your target</div></div>
+    <div class="card" style="max-width:480px;margin-bottom:16px">
+      <div class="section-title">New Price Alert</div>
+      <div class="form-group"><label class="form-label">Crop</label><select class="form-select"><option>Maize</option><option>Potato</option><option>Tomato</option><option>Beans</option></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Alert When Price (RWF)</label><select class="form-select"><option>drops below</option><option>rises above</option></select></div>
+        <div class="form-group"><label class="form-label">Target Price</label><input class="form-input" type="number" placeholder="e.g. 400"></div>
+      </div>
+      <button class="btn btn-primary">Set Alert</button>
+    </div>
+    <div class="section-title">Active Alerts</div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Crop</th><th>Condition</th><th>Target</th><th>Current</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Maize</td><td>Below</td><td>RWF 430</td><td>RWF 450</td><td><span class="badge badge-green">Triggered!</span></td></tr>
+        <tr><td>Tomato</td><td>Below</td><td>RWF 500</td><td>RWF 600</td><td><span class="badge badge-teal">Watching</span></td></tr>
+        <tr><td>Beans</td><td>Below</td><td>RWF 750</td><td>RWF 800</td><td><span class="badge badge-teal">Watching</span></td></tr>
+      </tbody>
+    </table>
+  `;
+}
+
+function farmerProfiles() {
+  const farmers = [
+    {name:'Mugabo K.',loc:'Musanze',crops:'Maize, Sorghum',rating:'4.7',orders:24,verified:true},
+    {name:'Uwimana R.',loc:'Rubavu',crops:'Potatoes, Vegetables',rating:'4.5',orders:18,verified:true},
+    {name:'Kantarama S.',loc:'Kigali',crops:'Tomatoes, Peppers',rating:'4.8',orders:32,verified:true},
+    {name:'Irakoze M.',loc:'Huye',crops:'Avocado, Banana',rating:'4.6',orders:14,verified:false},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">Farmer Profiles</div><div class="page-subtitle">Discover verified farmers across Rwanda</div></div>
+    <div class="search-bar"><input class="search-input" placeholder="Search by name, crop, district..."></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+      ${farmers.map(f=>`
+        <div class="card" style="text-align:center">
+          <div class="avatar" style="background:var(--green-600);width:48px;height:48px;font-size:16px;margin:0 auto 10px">${f.name.split(' ').map(n=>n[0]).join('')}</div>
+          <div style="font-weight:500;font-size:14px">${f.name} ${f.verified?'<span class="badge badge-green" style="font-size:10px">✓ Verified</span>':''}</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px">📍 ${f.loc}</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px">${f.crops}</div>
+          <div style="display:flex;justify-content:center;gap:16px;margin-top:10px">
+            <div><div style="font-size:16px;font-weight:500;color:var(--green-600)">${f.rating}★</div><div style="font-size:11px;color:var(--color-text-tertiary)">rating</div></div>
+            <div><div style="font-size:16px;font-weight:500">${f.orders}</div><div style="font-size:11px;color:var(--color-text-tertiary)">orders</div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-sm btn-primary" style="flex:1;justify-content:center">View</button><button class="btn btn-sm" style="flex:1;justify-content:center">Message</button></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function paymentsPage() {
+  return `
+    <div class="page-header"><div class="page-title">Payments</div></div>
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Total Paid (Month)</div><div class="stat-value">1.2M</div><div class="stat-change">RWF</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Payments</div><div class="stat-value">2</div><div class="stat-change amber">RWF 60,500</div></div>
+    </div>
+    <div class="card"><div class="section-title">Payment Methods</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)"><div style="width:40px;height:40px;background:var(--teal-50);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:18px">📱</div><div><div style="font-size:13px;font-weight:500">MTN Mobile Money</div><div style="font-size:12px;color:var(--color-text-secondary)">**** **** 8821</div></div><span class="badge badge-green" style="margin-left:auto">Default</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)"><div style="width:40px;height:40px;background:var(--blue-50);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:18px">🏦</div><div><div style="font-size:13px;font-weight:500">Bank of Kigali</div><div style="font-size:12px;color:var(--color-text-secondary)">Account ending 4421</div></div></div>
+      </div>
+      <button class="btn btn-sm" style="margin-top:12px">+ Add Payment Method</button>
+    </div>
+  `;
+}
+
+function sssDashboard() {
+  return `
+    <div class="page-header"><div class="page-title">Seed Seller Dashboard</div><div class="page-subtitle">Nkurunziza J. · Musanze District</div></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Products Listed</div><div class="stat-value">16</div><div class="stat-change up">+3 this month</div></div>
+      <div class="stat-card"><div class="stat-label">Orders This Week</div><div class="stat-value">24</div><div class="stat-change up">+8 vs last week</div></div>
+      <div class="stat-card"><div class="stat-label">Revenue (Month)</div><div class="stat-value">820K</div><div class="stat-change up">RWF +22%</div></div>
+      <div class="stat-card"><div class="stat-label">Low Stock Items</div><div class="stat-value">3</div><div class="stat-change down">Restock needed</div></div>
+    </div>
+    <div class="alert alert-warn">3 seed products are running low — Tomato F1, Bean Climbing, SORG-A.</div>
+    <div class="card"><div class="section-title">Top Products This Month</div>
+      ${seeds.map((s,i)=>`<div class="chart-bar-wrap"><div class="chart-bar-label"><span>${s.icon} ${s.name}</span><span>${[48,23,60,35][i]} units</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${[96,46,100,70][i]}%;background:var(--amber-200)"></div></div></div>`).join('')}
+    </div>
+  `;
+}
+
+function sssInventory() {
+  return `
+    <div class="page-header"><div class="page-title">My Inventory</div></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-primary btn-sm" onclick="navigate('addproduct')">+ Add Product</button></div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Product</th><th>Brand</th><th>Price</th><th>Stock</th><th>Rating</th><th>Status</th><th></th></tr></thead>
+      <tbody>${seeds.map(s=>`
+        <tr>
+          <td>${s.icon} ${s.name}</td>
+          <td style="color:var(--color-text-secondary)">${s.brand}</td>
+          <td style="font-weight:500;color:var(--amber-600)">${s.price}</td>
+          <td>${s.stock} units</td>
+          <td>★ ${s.rating}</td>
+          <td><span class="badge ${s.stock < 30 ? 'badge-amber' : 'badge-green'}">${s.stock < 30 ? 'Low Stock' : 'In Stock'}</span></td>
+          <td><button class="btn btn-sm">Edit</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function addProduct() {
+  return `
+    <div class="page-header"><div class="page-title">Add Seed / Input Product</div></div>
+    <div class="card" style="max-width:560px">
+      <div class="form-group"><label class="form-label">Product Name</label><input class="form-input" placeholder="e.g. Hybrid Maize Seed RAB-1"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Seeds</option><option>Fertilizer</option><option>Pesticide</option><option>Equipment</option></select></div>
+        <div class="form-group"><label class="form-label">Unit</label><select class="form-select"><option>kg</option><option>bag</option><option>liter</option><option>piece</option></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Price (RWF)</label><input class="form-input" type="number"></div>
+        <div class="form-group"><label class="form-label">Stock Quantity</label><input class="form-input" type="number"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Certification / Brand</label><input class="form-input" placeholder="e.g. RAB Approved, ISABU Certified"></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" rows="3" placeholder="Germination rate, crop type, usage instructions..."></textarea></div>
+      <div class="form-group"><label class="form-label">Low Stock Alert At</label><input class="form-input" type="number" placeholder="e.g. 10 units"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center">Publish Product</button>
+    </div>
+  `;
+}
+
+function sssOrders() {
+  const orders = [
+    {farmer:'Mugabo K.',product:'Hybrid Maize Seed 2kg',qty:3,total:'RWF 36,000',status:'Paid',date:'Apr 12'},
+    {farmer:'Bizimana E.',product:'Bean Seed (Climbing) 1kg',qty:5,total:'RWF 17,500',status:'Pending Payment',date:'Apr 11'},
+    {farmer:'Ndayisaba T.',product:'Tomato F1 Seeds 100g',qty:2,total:'RWF 17,000',status:'Shipped',date:'Apr 10'},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">Seed Orders</div></div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Farmer</th><th>Product</th><th>Qty</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr></thead>
+      <tbody>${orders.map(o=>`
+        <tr>
+          <td>${o.farmer}</td>
+          <td>${o.product}</td>
+          <td>${o.qty}</td>
+          <td style="font-weight:500;color:var(--amber-600)">${o.total}</td>
+          <td><span class="badge ${o.status==='Paid'?'badge-green':o.status==='Shipped'?'badge-teal':'badge-amber'}">${o.status}</span></td>
+          <td style="color:var(--color-text-secondary)">${o.date}</td>
+          <td><button class="btn btn-sm">Details</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function analyticsPage() {
+  return `
+    <div class="page-header"><div class="page-title">Sales Analytics</div></div>
+    <div class="stats-grid"><div class="stat-card"><div class="stat-label">Best Seller</div><div class="stat-value" style="font-size:16px">Bean Seed</div><div class="stat-change up">60 units</div></div><div class="stat-card"><div class="stat-label">Revenue (Month)</div><div class="stat-value">820K</div></div><div class="stat-card"><div class="stat-label">Repeat Buyers</div><div class="stat-value">68%</div><div class="stat-change up">+5%</div></div></div>
+    <div class="card"><div class="section-title">Revenue by Week</div>${['W1','W2','W3','W4'].map((w,i)=>`<div class="chart-bar-wrap"><div class="chart-bar-label"><span>${w}</span><span>RWF ${[180,210,230,200][i]}K</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${[72,84,92,80][i]}%;background:var(--amber-200)"></div></div></div>`).join('')}</div>
+  `;
+}
+
+function promosPage() {
+  return `
+    <div class="page-header"><div class="page-title">Promotions</div></div>
+    <div class="card" style="max-width:480px"><div class="section-title">Create Promotion</div>
+      <div class="form-group"><label class="form-label">Product</label><select class="form-select"><option>Select product...</option>${seeds.map(s=>`<option>${s.name}</option>`).join('')}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label class="form-label">Discount %</label><input class="form-input" type="number" placeholder="10"></div><div class="form-group"><label class="form-label">Valid Until</label><input class="form-input" type="date"></div></div>
+      <button class="btn btn-primary">Apply Promotion</button>
+    </div>
+  `;
+}
+
+function supDashboard() {
+  return `
+    <div class="page-header"><div class="page-title">Supplier Dashboard</div><div class="page-subtitle">Habimana P. · Agro-Supplies Ltd</div></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Active Listings</div><div class="stat-value">28</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Requests</div><div class="stat-value">7</div><div class="stat-change up">3 urgent</div></div>
+      <div class="stat-card"><div class="stat-label">Deliveries Today</div><div class="stat-value">5</div></div>
+      <div class="stat-card"><div class="stat-label">Revenue (Month)</div><div class="stat-value">2.4M</div><div class="stat-change up">RWF</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="section-title">Delivery Schedule Today</div>
+        ${[{loc:'Musanze',items:'NPK 50kg × 2',time:'9:00 AM'},{loc:'Rubavu',items:'Pesticide 10L',time:'11:30 AM'},{loc:'Kigali',items:'Drip Kit × 1',time:'2:00 PM'}].map(d=>`<div class="order-item"><div><div style="font-size:13px;font-weight:500">📍 ${d.loc}</div><div style="font-size:12px;color:var(--color-text-secondary)">${d.items}</div></div><span class="badge badge-blue">${d.time}</span></div>`).join('')}
+      </div>
+      <div class="card"><div class="section-title">Top Requested Products</div>
+        ${supplies.map((s,i)=>`<div class="chart-bar-wrap"><div class="chart-bar-label"><span>${s.icon} ${s.name}</span><span>${[45,23,12,8][i]} requests</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${[100,51,27,18][i]}%;background:var(--blue-200)"></div></div></div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function supCatalog() {
+  return `
+    <div class="page-header"><div class="page-title">Supply Catalog</div></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-primary btn-sm" onclick="navigate('addsupply')">+ Add Supply</button></div>
+    <div class="listing-grid">${supplies.map(s=>`
+      <div class="listing-card">
+        <div class="listing-img" style="background:var(--blue-50);font-size:28px">${s.icon}</div>
+        <div class="listing-body">
+          <div class="listing-name">${s.name}</div>
+          <div class="listing-farmer">${s.supplier}</div>
+          <div class="listing-price">${s.price}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="badge badge-blue">${s.stock} in stock</span><button class="btn btn-sm">Edit</button></div>
+        </div>
+      </div>`).join('')}
+    </div>
+  `;
+}
+
+function addSupply() {
+  return `
+    <div class="page-header"><div class="page-title">Add Supply Item</div></div>
+    <div class="card" style="max-width:560px">
+      <div class="form-group"><label class="form-label">Product Name</label><input class="form-input" placeholder="e.g. NPK Fertilizer 25kg"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Fertilizer</option><option>Pesticide</option><option>Equipment</option><option>Irrigation</option><option>Machinery</option></select></div>
+        <div class="form-group"><label class="form-label">Price (RWF)</label><input class="form-input" type="number"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Stock Quantity</label><input class="form-input" type="number"></div>
+        <div class="form-group"><label class="form-label">Delivery Radius (km)</label><input class="form-input" type="number" placeholder="50"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Coverage Districts</label><input class="form-input" placeholder="Musanze, Rubavu, Nyagatare..."></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" rows="3"></textarea></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center">Publish Supply</button>
+    </div>
+  `;
+}
+
+function deliveriesPage() {
+  const deliveries = [
+    {id:'DEL-001',farmer:'Mugabo K.',item:'NPK 50kg',loc:'Musanze',status:'En Route',date:'Apr 12'},
+    {id:'DEL-002',farmer:'Bizimana E.',item:'Pesticide 5L',loc:'Nyagatare',status:'Scheduled',date:'Apr 13'},
+    {id:'DEL-003',farmer:'Uwimana R.',item:'Drip Kit',loc:'Rubavu',status:'Delivered',date:'Apr 10'},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">Deliveries</div></div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>ID</th><th>Farmer</th><th>Item</th><th>Location</th><th>Status</th><th>Date</th><th></th></tr></thead>
+      <tbody>${deliveries.map(d=>`
+        <tr>
+          <td style="font-family:monospace;font-size:12px">${d.id}</td>
+          <td>${d.farmer}</td><td>${d.item}</td><td>📍 ${d.loc}</td>
+          <td><span class="badge ${d.status==='Delivered'?'badge-green':d.status==='En Route'?'badge-teal':'badge-blue'}">${d.status}</span></td>
+          <td style="color:var(--color-text-secondary)">${d.date}</td>
+          <td><button class="btn btn-sm">Update</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function supRequests() {
+  return `
+    <div class="page-header"><div class="page-title">Farmer Requests</div><div class="page-subtitle">Open supply requests from farmers</div></div>
+    ${[
+      {farmer:'Ndayisaba T.',item:'NPK Fertilizer 100kg',loc:'Karongi',urgent:true},
+      {farmer:'Byukusenge L.',item:'Pesticide Spray 10L',loc:'Rwamagana',urgent:false},
+      {farmer:'Kantarama S.',item:'Drip Irrigation Kit',loc:'Kigali',urgent:false},
+    ].map(r=>`
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:14px;font-weight:500">${r.item}</div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-top:3px">Farmer: ${r.farmer} · 📍 ${r.loc}</div>
+          </div>
+          ${r.urgent?'<span class="badge badge-coral">Urgent</span>':''}
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary btn-sm">Accept & Quote</button><button class="btn btn-sm">Message Farmer</button></div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function routesPage() {
+  return `
+    <div class="page-header"><div class="page-title">Delivery Routes</div></div>
+    <div class="map-placeholder"><span style="font-size:24px">🗺</span><span>Map showing delivery routes across Rwanda</span><span style="font-size:12px;color:var(--green-600)">Kigali → Musanze → Rubavu → Nyagatare</span></div>
+    <div class="card"><div class="section-title">Today's Route Summary</div>
+      <table class="table"><thead><tr><th>Stop</th><th>District</th><th>ETA</th><th>Items</th></tr></thead>
+      <tbody><tr><td>1</td><td>Musanze</td><td>9:00 AM</td><td>NPK 100kg</td></tr><tr><td>2</td><td>Rubavu</td><td>11:30 AM</td><td>Pesticide 10L</td></tr><tr><td>3</td><td>Kigali</td><td>2:00 PM</td><td>Drip Kit ×2</td></tr></tbody></table>
+    </div>
+  `;
+}
+
+function adminDashboard() {
+  return `
+    <div class="page-header"><div class="page-title">Platform Overview</div><div class="page-subtitle">AgriLink Admin · April 2026</div></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value">1,842</div><div class="stat-change up">+124 this month</div></div>
+      <div class="stat-card"><div class="stat-label">Active Listings</div><div class="stat-value">386</div><div class="stat-change up">+43</div></div>
+      <div class="stat-card"><div class="stat-label">Transactions (Month)</div><div class="stat-value">2,104</div><div class="stat-change up">RWF 48.2M volume</div></div>
+      <div class="stat-card"><div class="stat-label">Open Disputes</div><div class="stat-value">5</div><div class="stat-change down">2 urgent</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="section-title">Users by Role</div>
+        ${[{r:'Farmers',n:1102,c:'var(--green-400)'},{r:'Buyers',n:428,c:'var(--teal-400)'},{r:'Seed Sellers',n:187,c:'var(--amber-200)'},{r:'Suppliers',n:98,c:'var(--blue-200)'},{r:'Admins',n:7,c:'var(--coral-200)'}].map(u=>`
+          <div class="chart-bar-wrap"><div class="chart-bar-label"><span>${u.r}</span><span>${u.n}</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${Math.round(u.n/1102*100)}%;background:${u.c}"></div></div></div>`).join('')}
+      </div>
+      <div class="card"><div class="section-title">Platform Notifications</div>
+        <div class="notif-item"><div class="notif-dot" style="background:var(--coral-400)"></div><div><div class="notif-text">Dispute #D-0041 escalated — Buyer vs Farmer</div><div class="notif-time">1 hour ago</div></div></div>
+        <div class="notif-item"><div class="notif-dot" style="background:var(--amber-400)"></div><div><div class="notif-text">New seed seller account pending verification</div><div class="notif-time">3 hours ago</div></div></div>
+        <div class="notif-item"><div class="notif-dot" style="background:var(--green-400)"></div><div><div class="notif-text">Transaction volume hit monthly record</div><div class="notif-time">Today</div></div></div>
+        <div class="notif-item"><div class="notif-dot" style="background:var(--blue-400)"></div><div><div class="notif-text">18 new farmers verified this week</div><div class="notif-time">Yesterday</div></div></div>
+      </div>
+    </div>
+  `;
+}
+
+function adminUsers() {
+  const users = [
+    {name:'Mugabo K.',role:'Farmer',district:'Musanze',status:'Verified',joined:'Jan 2026'},
+    {name:'Uwase A.',role:'Buyer',district:'Kigali',status:'Verified',joined:'Feb 2026'},
+    {name:'Nkurunziza J.',role:'Seed Seller',district:'Musanze',status:'Verified',joined:'Mar 2026'},
+    {name:'Habimana P.',role:'Supplier',district:'Kigali',status:'Pending',joined:'Apr 2026'},
+    {name:'Kantarama S.',role:'Farmer',district:'Kigali',status:'Verified',joined:'Dec 2025'},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">User Management</div></div>
+    <div class="search-bar"><input class="search-input" placeholder="Search users by name, role, district..."><button class="btn btn-primary">Search</button></div>
+    <div class="filter-row"><div class="filter-chip active">All</div><div class="filter-chip">Farmers</div><div class="filter-chip">Buyers</div><div class="filter-chip">Seed Sellers</div><div class="filter-chip">Suppliers</div><div class="filter-chip">Pending</div></div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Name</th><th>Role</th><th>District</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+      <tbody>${users.map(u=>`
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:var(--green-600);width:28px;height:28px;font-size:10px;flex-shrink:0">${u.name.split(' ').map(n=>n[0]).join('')}</div>${u.name}</div></td>
+          <td><span class="badge ${u.role==='Farmer'?'badge-green':u.role==='Buyer'?'badge-teal':u.role==='Seed Seller'?'badge-amber':u.role==='Supplier'?'badge-blue':'badge-coral'}">${u.role}</span></td>
+          <td>${u.district}</td>
+          <td><span class="badge ${u.status==='Verified'?'badge-green':'badge-amber'}">${u.status}</span></td>
+          <td style="color:var(--color-text-secondary)">${u.joined}</td>
+          <td><button class="btn btn-sm">View</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function adminListings() {
+  return `
+    <div class="page-header"><div class="page-title">All Listings</div></div>
+    <div class="filter-row"><div class="filter-chip active">All</div><div class="filter-chip">Produce</div><div class="filter-chip">Seeds</div><div class="filter-chip">Supplies</div><div class="filter-chip">Flagged</div></div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>Product</th><th>Seller</th><th>Type</th><th>Price</th><th>Status</th><th></th></tr></thead>
+      <tbody>${produce.slice(0,5).map(p=>`
+        <tr>
+          <td>${p.icon} ${p.name}</td>
+          <td>${p.farmer}</td>
+          <td><span class="badge badge-green">Produce</span></td>
+          <td>${p.price}</td>
+          <td><span class="badge badge-teal">Active</span></td>
+          <td><button class="btn btn-sm">Review</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function adminTransactions() {
+  const txns = [
+    {id:'TXN-8821',from:'Uwase A.',to:'Mugabo K.',item:'Maize 50kg',amount:'RWF 22,500',method:'MoMo',date:'Apr 12'},
+    {id:'TXN-8820',from:'Ndiho P.',to:'Mugabo K.',item:'Sorghum 100kg',amount:'RWF 38,000',method:'Bank',date:'Apr 11'},
+    {id:'TXN-8819',from:'Mugabo K.',to:'Nkurunziza J.',item:'Maize Seed 2kg',amount:'RWF 12,000',method:'MoMo',date:'Apr 10'},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">Transactions</div></div>
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Volume (Month)</div><div class="stat-value">48.2M</div><div class="stat-change">RWF</div></div>
+      <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-value">2,104</div><div class="stat-change up">+12%</div></div>
+      <div class="stat-card"><div class="stat-label">Platform Fee (5%)</div><div class="stat-value">2.41M</div><div class="stat-change">RWF</div></div>
+    </div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>ID</th><th>From</th><th>To</th><th>Item</th><th>Amount</th><th>Method</th><th>Date</th></tr></thead>
+      <tbody>${txns.map(t=>`
+        <tr>
+          <td style="font-family:monospace;font-size:12px">${t.id}</td>
+          <td>${t.from}</td><td>${t.to}</td><td>${t.item}</td>
+          <td style="font-weight:500;color:var(--green-600)">${t.amount}</td>
+          <td><span class="badge badge-teal">${t.method}</span></td>
+          <td style="color:var(--color-text-secondary)">${t.date}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function adminReports() {
+  return `
+    <div class="page-header"><div class="page-title">Platform Reports</div></div>
+    <div class="grid-2">
+      <div class="card"><div class="section-title">Monthly Transaction Volume (RWF M)</div>${['Jan','Feb','Mar','Apr'].map((m,i)=>`<div class="chart-bar-wrap"><div class="chart-bar-label"><span>${m}</span><span>${[28,32,41,48][i]}M</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${[58,67,85,100][i]}%;background:var(--green-400)"></div></div></div>`).join('')}</div>
+      <div class="card"><div class="section-title">New User Registrations</div>${['Jan','Feb','Mar','Apr'].map((m,i)=>`<div class="chart-bar-wrap"><div class="chart-bar-label"><span>${m}</span><span>${[210,280,340,124][i]} users</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${[62,82,100,36][i]}%;background:var(--teal-400)"></div></div></div>`).join('')}</div>
+    </div>
+    <div class="card"><div class="section-title">Regional Activity</div>
+      ${[{d:'Kigali',txn:820},{d:'Musanze',txn:460},{d:'Rubavu',txn:310},{d:'Nyagatare',txn:280},{d:'Rwamagana',txn:234}].map(r=>`<div class="chart-bar-wrap"><div class="chart-bar-label"><span>📍 ${r.d}</span><span>${r.txn} transactions</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${Math.round(r.txn/820*100)}%;background:var(--blue-200)"></div></div></div>`).join('')}
+    </div>
+  `;
+}
+
+function adminDisputes() {
+  const disputes = [
+    {id:'D-0041',buyer:'Uwase A.',farmer:'Kantarama S.',issue:'Produce quality mismatch',status:'Urgent',date:'Apr 12'},
+    {id:'D-0039',buyer:'Ndiho P.',farmer:'Mugabo K.',issue:'Delivery not received',status:'Open',date:'Apr 10'},
+    {id:'D-0036',buyer:'Mugisha F.',farmer:'Bizimana E.',issue:'Wrong quantity delivered',status:'Resolved',date:'Apr 8'},
+  ];
+  return `
+    <div class="page-header"><div class="page-title">Disputes</div></div>
+    <table class="table" style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <thead><tr><th>ID</th><th>Buyer</th><th>Farmer</th><th>Issue</th><th>Status</th><th>Date</th><th></th></tr></thead>
+      <tbody>${disputes.map(d=>`
+        <tr>
+          <td style="font-family:monospace;font-size:12px">${d.id}</td>
+          <td>${d.buyer}</td><td>${d.farmer}</td>
+          <td style="font-size:12px">${d.issue}</td>
+          <td><span class="badge ${d.status==='Urgent'?'badge-coral':d.status==='Resolved'?'badge-green':'badge-amber'}">${d.status}</span></td>
+          <td style="color:var(--color-text-secondary)">${d.date}</td>
+          <td><button class="btn btn-sm">Resolve</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function adminSettings() {
+  return `
+    <div class="page-header"><div class="page-title">Platform Settings</div></div>
+    <div class="card" style="max-width:520px">
+      <div class="section-title">General</div>
+      <div class="form-group"><label class="form-label">Platform Name</label><input class="form-input" value="AgriLink Rwanda"></div>
+      <div class="form-group"><label class="form-label">Support Email</label><input class="form-input" value="support@agrilink.rw"></div>
+      <div class="form-group"><label class="form-label">Platform Fee (%)</label><input class="form-input" type="number" value="5"></div>
+      <div class="form-group"><label class="form-label">Default Language</label><select class="form-select"><option>Kinyarwanda</option><option>English</option><option>French</option></select></div>
+      <div class="section-title" style="margin-top:16px">Verification</div>
+      <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-size:13px"><input type="checkbox" checked> Require ID verification for farmers</label></div>
+      <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-size:13px"><input type="checkbox" checked> Require certification for seed sellers</label></div>
+      <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-size:13px"><input type="checkbox"> Allow unverified listings (with badge)</label></div>
+      <button class="btn btn-primary" style="margin-top:4px">Save Settings</button>
+    </div>
+  `;
+}
+
+function switchTab(el, prefix, id) {
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll(`[id^="${prefix}-"]`).forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(`${prefix}-${id}`);
+  if (panel) panel.classList.add('active');
+}
+
+switchRole('farmer');
+</script>
